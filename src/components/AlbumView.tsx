@@ -104,14 +104,17 @@ const AlbumView: React.FC<AlbumViewProps> = ({
           } else {
             throw new Error('Invalid JSON response');
           }
-        } else {
+        } else if (contentType?.includes('audio') || contentType?.includes('octet-stream')) {
           const audioBlob = await response.blob();
-          console.log('✅ [AlbumView] Blob создан, размер:', (audioBlob.size / 1024 / 1024).toFixed(2), 'MB');
-          
           const blobUrl = URL.createObjectURL(audioBlob);
-          console.log('✅ [AlbumView] Blob URL создан:', blobUrl);
-          
           audio.src = blobUrl;
+        } else {
+          const text = await response.text();
+          if (text.startsWith('http')) {
+            audio.src = text.trim();
+          } else {
+            throw new Error(`Unsupported content type: ${contentType}`);
+          }
         }
         audio.load();
         setCurrentTrack(track);
