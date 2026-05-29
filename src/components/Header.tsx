@@ -36,6 +36,15 @@ const Header: React.FC = () => {
             )}
           </div>
           <div className="flex items-center gap-4">
+            <a
+              href="https://finance.ozon.ru/apps/sbp/ozonbankpay/019e6659-f643-7f06-8be5-4afbfddd501b"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden sm:inline-flex items-center gap-2 bg-vintage-warm hover:bg-vintage-dark-brown text-vintage-cream px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 hover:scale-105"
+            >
+              <Icon name="Heart" size={14} />
+              Поддержать музыканта
+            </a>
             <Button 
               variant="ghost" 
               size="sm"
