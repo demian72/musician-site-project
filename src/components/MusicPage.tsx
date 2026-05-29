@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Icon from '@/components/ui/icon';
 import Header from '@/components/Header';
 import Shop from '@/components/Shop';
 import ContactSection from '@/components/music/ContactSection';
@@ -126,6 +127,18 @@ const MusicPage = () => {
       />
 
       <ContactSection />
+
+      <div className="flex justify-center py-8 bg-vintage-cream/30">
+        <a
+          href="https://finance.ozon.ru/apps/sbp/ozonbankpay/019e6659-f643-7f06-8be5-4afbfddd501b"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 bg-vintage-warm hover:bg-vintage-dark-brown text-vintage-cream px-8 py-4 rounded-full text-base font-medium transition-all duration-300 hover:scale-105 shadow-lg"
+        >
+          <Icon name="Heart" size={18} />
+          Поддержать музыканта
+        </a>
+      </div>
 
       <AdminLogin
         isAdmin={isAdmin}

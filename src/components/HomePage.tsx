@@ -184,6 +184,18 @@ const HomePage: React.FC = () => {
               Связаться
             </Button>
           </div>
+
+          <div className="mt-8">
+            <a
+              href="https://finance.ozon.ru/apps/sbp/ozonbankpay/019e6659-f643-7f06-8be5-4afbfddd501b"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-vintage-cream/40 text-vintage-cream px-6 py-3 rounded-full text-sm transition-all duration-300 hover:scale-105 backdrop-blur-sm"
+            >
+              <Icon name="Heart" size={16} />
+              Поддержать музыканта
+            </a>
+          </div>
         </div>
       </div>
     </div>
