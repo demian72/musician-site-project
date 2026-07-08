@@ -1,6 +1,5 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { useNavigate } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import Logo from '@/components/Logo';
@@ -25,7 +24,15 @@ const HomePage: React.FC = () => {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             {/* Текстовая часть */}
             <div className="text-center md:text-left">
-              <Badge className="mb-6 px-4 py-2 bg-vintage-warm text-vintage-cream hover:bg-vintage-brown">🎵Официальный сайт Дмитрия Шмелидзэ</Badge>
+              <a
+                href="https://finance.ozon.ru/apps/sbp/ozonbankpay/019e6659-f643-7f06-8be5-4afbfddd501b"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 mb-6 bg-vintage-warm hover:bg-vintage-dark-brown text-vintage-cream px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 hover:scale-105 shadow-md"
+              >
+                <Icon name="Heart" size={14} />
+                Поддержать музыканта
+              </a>
               
               <h1 className="md:text-3xl text-vintage-dark-brown text-center my-[9px] px-7 text-2xl font-medium">Иногда мне кажется, что песня — это способ разговаривать, когда обычных слов не хватает. Музыка знает короткие дороги к тем местам внутри нас, куда логика не дотягивается.</h1>
               
