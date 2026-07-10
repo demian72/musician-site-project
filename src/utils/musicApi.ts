@@ -158,8 +158,9 @@ export const musicApi = {
       
       if (!fileUrl) return null;
       
+      // Ссылка (например, Яндекс.Диск) — возвращаем как есть, откроется в новой вкладке
       if (fileUrl.startsWith('http://') || fileUrl.startsWith('https://')) {
-        return `${API_URL}?path=track-stream&file_key=${encodeURIComponent(trackId)}`;
+        return fileUrl;
       }
       
       if (fileUrl.startsWith('audio_')) {

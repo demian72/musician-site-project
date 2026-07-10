@@ -62,76 +62,67 @@ const AlbumView: React.FC<AlbumViewProps> = ({
       return;
     }
 
-    if (currentTrack?.id === track.id) {
-      if (isPlaying) {
-        audio.pause();
-        setIsPlaying(false);
-      } else {
-        try {
-          await audio.play();
-          setIsPlaying(true);
-        } catch (error) {
-          console.warn('Ошибка воспроизведения:', error);
-          setIsPlaying(false);
-        }
+    try {
+      console.log('🎵 [AlbumView] Открываем трек:', track.title);
+
+      const audioUrl = await musicApi.getTrackFile(track.id);
+
+      if (!audioUrl || audioUrl.trim() === '') {
+        console.error('❌ [AlbumView] Файл трека не найден!');
+        alert(`Для трека "${track.title}" не загружен аудиофайл. Загрузите файл в админ-панели.`);
+        return;
       }
-    } else {
-      try {
-        console.log('🎵 [AlbumView] Запуск нового трека:', track.title);
-        
-        const audioUrl = await musicApi.getTrackFile(track.id);
-        
-        if (!audioUrl || audioUrl.trim() === '') {
-          console.error('❌ [AlbumView] Файл трека не найден!');
-          alert(`Для трека "${track.title}" не загружен аудиофайл. Загрузите файл в админ-панели.`);
-          return;
-        }
-        
-        console.log('✅ [AlbumView] Файл получен, URL:', audioUrl);
-        
-        const response = await fetch(audioUrl);
-        if (!response.ok) {
-          throw new Error(`Failed to fetch audio: ${response.status}`);
-        }
-        
-        const contentType = response.headers.get('content-type');
-        
-        if (contentType?.includes('application/json')) {
-          const data = await response.json();
-          if (data.type === 'redirect' && data.url) {
-            console.log('✅ [AlbumView] Получен CDN URL:', data.url);
-            audio.src = data.url;
-          } else {
-            throw new Error('Invalid JSON response');
-          }
-        } else if (contentType?.includes('audio') || contentType?.includes('octet-stream')) {
-          const audioBlob = await response.blob();
-          const blobUrl = URL.createObjectURL(audioBlob);
-          audio.src = blobUrl;
-        } else {
-          const text = await response.text();
-          if (text.startsWith('http')) {
-            audio.src = text.trim();
-          } else {
-            throw new Error(`Unsupported content type: ${contentType}`);
-          }
-        }
-        audio.load();
-        setCurrentTrack(track);
-        setCurrentTime(0);
-        setDuration(0);
-        
-        console.log('✅ [AlbumView] Трек загружен, начинаем воспроизведение');
-        await audio.play();
-        setIsPlaying(true);
-        
+
+      // Если это внешняя ссылка (например, Яндекс.Диск) — открываем в новой вкладке
+      if (audioUrl.startsWith('http://') || audioUrl.startsWith('https://')) {
+        window.open(audioUrl, '_blank', 'noopener,noreferrer');
         await incrementPlayCount(track.id);
-        
-        console.log('✅ [AlbumView] Воспроизведение началось');
-      } catch (error) {
-        console.error('❌ [AlbumView] Ошибка загрузки/воспроизведения трека:', track.title, error);
-        setIsPlaying(false);
+        return;
       }
+
+      // Иначе — воспроизводим локально сохранённый файл через плеер
+      const response = await fetch(audioUrl);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch audio: ${response.status}`);
+      }
+
+      const contentType = response.headers.get('content-type');
+
+      if (contentType?.includes('application/json')) {
+        const data = await response.json();
+        if (data.type === 'redirect' && data.url) {
+          window.open(data.url, '_blank', 'noopener,noreferrer');
+          await incrementPlayCount(track.id);
+          return;
+        } else {
+          throw new Error('Invalid JSON response');
+        }
+      } else if (contentType?.includes('audio') || contentType?.includes('octet-stream')) {
+        const audioBlob = await response.blob();
+        const blobUrl = URL.createObjectURL(audioBlob);
+        audio.src = blobUrl;
+      } else {
+        const text = await response.text();
+        if (text.startsWith('http')) {
+          window.open(text.trim(), '_blank', 'noopener,noreferrer');
+          await incrementPlayCount(track.id);
+          return;
+        } else {
+          throw new Error(`Unsupported content type: ${contentType}`);
+        }
+      }
+      audio.load();
+      setCurrentTrack(track);
+      setCurrentTime(0);
+      setDuration(0);
+
+      await audio.play();
+      setIsPlaying(true);
+
+      await incrementPlayCount(track.id);
+    } catch (error) {
+      console.error('❌ [AlbumView] Ошибка загрузки/воспроизведения трека:', track.title, error);
+      setIsPlaying(false);
     }
   };
 
