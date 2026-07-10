@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import Icon from '@/components/ui/icon';
 import { Album } from '@/types';
-import { convertYandexDiskUrl } from '@/utils/yandexDisk';
 
 interface AddTrackDialogProps {
   open: boolean;
@@ -34,43 +33,7 @@ const AddTrackDialog: React.FC<AddTrackDialogProps> = ({
   albums,
   onAddTrack
 }) => {
-  const [previewAudioUrl, setPreviewAudioUrl] = useState<string>('');
-  const [loadingPreview, setLoadingPreview] = useState(false);
-  const [previewError, setPreviewError] = useState(false);
-  const audioRef = React.useRef<HTMLAudioElement>(null);
-
   const isButtonDisabled = !newTrack.title || !newTrack.file || !selectedAlbum;
-
-  useEffect(() => {
-    const loadPreviewUrl = async () => {
-      if (newTrack.file) {
-        setLoadingPreview(true);
-        setPreviewError(false);
-        try {
-          const url = await convertYandexDiskUrl(newTrack.file);
-          setPreviewAudioUrl(url);
-        } catch (error) {
-          console.error('Ошибка загрузки превью:', error);
-          setPreviewAudioUrl(newTrack.file);
-        } finally {
-          setLoadingPreview(false);
-        }
-      } else {
-        setPreviewAudioUrl('');
-      }
-    };
-    loadPreviewUrl();
-  }, [newTrack.file]);
-
-  const handleAudioLoaded = () => {
-    if (audioRef.current && !newTrack.duration) {
-      const duration = Math.round(audioRef.current.duration);
-      if (duration && !isNaN(duration) && isFinite(duration)) {
-        onTrackChange({...newTrack, duration: duration.toString()});
-        console.log('✅ [AddTrackDialog] Длительность определена автоматически:', duration, 'сек');
-      }
-    }
-  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -152,36 +115,15 @@ const AddTrackDialog: React.FC<AddTrackDialogProps> = ({
                 />
               </div>
             </div>
-            
+
             {newTrack.file && (
               <div className="mt-3 p-4 bg-vintage-brown/5 rounded-lg border border-vintage-brown/20">
-                <div className="flex items-center gap-3 mb-2">
-                  {loadingPreview ? (
-                    <Icon name="Loader2" size={16} className="text-vintage-warm animate-spin" />
-                  ) : (
-                    <Icon name="Music" size={16} className="text-vintage-warm" />
-                  )}
+                <div className="flex items-center gap-3">
+                  <Icon name="Music" size={16} className="text-vintage-warm" />
                   <span className="text-sm font-medium text-vintage-dark-brown">
-                    {loadingPreview ? 'Загрузка трека...' : 'Предпросмотр трека'}
+                    Ссылка сохранена. При нажатии Play трек будет открываться в новой вкладке Яндекс.Диска
                   </span>
                 </div>
-                {previewAudioUrl && !loadingPreview && (
-                  <audio 
-                    ref={audioRef}
-                    src={previewAudioUrl} 
-                    controls 
-                    className="w-full"
-                    style={{ height: '40px' }}
-                    onError={() => setPreviewError(true)}
-                    onLoadedMetadata={handleAudioLoaded}
-                  />
-                )}
-                {previewError && (
-                  <p className="text-xs text-red-600 flex items-center gap-1 mt-2">
-                    <Icon name="AlertCircle" size={12} />
-                    Не удалось загрузить трек. Проверьте ссылку.
-                  </p>
-                )}
               </div>
             )}
           </div>
